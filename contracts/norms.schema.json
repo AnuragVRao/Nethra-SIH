@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "netra/norms.schema.json",
+  "title": "norms.json",
+  "description": "Self-calibrated road norms. Produced by M5 (owner C) from tracks_m.jsonl. STUB — C owns the content of this contract; the shape below is the parent PRD 5.4 baseline for E and D to code against. null is a valid value for any field and consumers must degrade gracefully.",
+  "type": "object",
+  "required": ["speed_85_kmh", "sample_size", "lanes", "signal_cycle_s"],
+  "properties": {
+    "speed_85_kmh": {"description": "The speed 85 of 100 vehicles stay under. Null until at least 200 completed tracks are available.", "type": ["number", "null"]},
+    "sample_size": {"description": "Completed tracks behind speed_85_kmh. Stored alongside the value, never omitted.", "type": ["integer", "null"]},
+    "lanes": {
+      "type": ["array", "null"],
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {"type": "integer"},
+          "centreline_m": {"type": "array", "items": {"type": "array", "minItems": 2, "maxItems": 2, "items": {"type": "number"}}},
+          "heading_deg": {"type": "number"}
+        }
+      }
+    },
+    "signal_cycle_s": {"description": "Null disables one dashboard panel. It does not crash the page.", "type": ["number", "null"]}
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "netra/calibration.schema.json",
+  "title": "calibration.json",
+  "description": "Pixel-to-metre transform for one fixed camera position. Produced by M1 (owner B). Parent PRD 5.1, as amended by edge PRD A2.",
+  "type": "object",
+  "required": ["video_id", "homography", "reference_points", "rms_error_m", "location", "valid_region_px", "max_range_m", "method"],
+  "additionalProperties": false,
+  "properties": {
+    "video_id": {"type": "string"},
+    "homography": {
+      "description": "3x3 matrix mapping image pixels to the ground plane, row-major.",
+      "type": "array", "minItems": 3, "maxItems": 3,
+      "items": {"type": "array", "minItems": 3, "maxItems": 3, "items": {"type": "number"}}
+    },
+    "reference_points": {
+      "type": "array", "minItems": 4,
+      "items": {
+        "type": "object",
+        "required": ["pixel", "ground_m"],
+        "properties": {
+          "pixel": {"type": "array", "minItems": 2, "maxItems": 2, "items": {"type": "number"}},
+          "ground_m": {"type": "array", "minItems": 2, "maxItems": 2, "items": {"type": "number"}},
+          "note": {"type": "string"},
+          "held_out": {
+            "description": "true if this point was excluded from the fit and used only to measure rms_error_m.",
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "rms_error_m": {
+      "description": "Residual on held-out reference points, in metres. Above 0.5 the calibration is rejected: a wrong calibration is worse than none, because it looks fine. Edge PRD 4.3.",
+      "type": "number", "minimum": 0
+    },
+    "location": {
+      "description": "[latitude, longitude] of the ground-frame origin.",
+      "type": "array", "minItems": 2, "maxItems": 2, "items": {"type": "number"}
+    },
+    "valid_region_px": {
+      "description": "AMENDMENT A2. Image-space polygon inside which the projection is trusted. A detection whose ground-contact point falls outside it is discarded before tracking.",
+      "type": "array", "minItems": 3,
+      "items": {"type": "array", "minItems": 2, "maxItems": 2, "items": {"type": "number"}}
+    },
+    "max_range_m": {
+      "description": "AMENDMENT A2. Ground-plane distance from the origin beyond which projections are discarded.",
+      "type": "number", "exclusiveMinimum": 0
+    },
+    "method": {
+      "description": "How the real-world distances were obtained, and how far they are trusted. Edge PRD 4.2 — a judge asking 'how do you know that is 3.5 metres?' gets an answer instead of a shrug.",
+      "type": "object",
+      "required": ["technique", "assumed_uncertainty_m", "note"],
+      "properties": {
+        "technique": {"type": "string", "enum": ["satellite", "lane_width", "vehicle_length", "road_markings", "site_measurement", "synthetic"]},
+        "assumed_uncertainty_m": {"type": "number", "minimum": 0},
+        "note": {"type": "string"}
+      }
+    },
+    "image_size_px": {
+      "type": "array", "minItems": 2, "maxItems": 2, "items": {"type": "integer"}
+    }
+  }
+}
