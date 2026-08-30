@@ -1,4 +1,4 @@
-# NETRA
+# NETHRA
 
 **Near-miss Enabled Traffic Risk Analytics** — Smart India Hackathon 2026
 
